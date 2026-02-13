@@ -1,0 +1,11 @@
+export const GEMINI_MODEL = 'gemini-2.5-flash';
+export const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+export const ALLOWED_PLATFORMS = ['Instagram', 'LinkedIn', 'Twitter/X'];
+export const ALLOWED_TONES = ['Professional', 'Casual', 'Motivational'];
+export const ALLOWED_LANGUAGES = ['English', 'Hindi'];
+export const REFINEMENTS = ['Stronger Hook', 'More Emotional', 'Make Shorter', 'More Professional'];
+export const FREE_TIER_DAILY_LIMIT = 10;
+export const GUEST_LIMIT = 1;
+export const COOLDOWN_SECONDS = 10;
+export const MAX_HISTORY_ITEMS = 20;
+export const MAX_OUTPUT_TOKENS = 400;

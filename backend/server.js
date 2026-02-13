@@ -50,17 +50,21 @@ app.post('/generate', async (req, res) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const prompt = buildPrompt({ topic, platform, tone });
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text().trim();
-
+    if (!result.response) {
+      throw new Error('No response received from Gemini API');
+    }
+    const text = result.response.text().trim();
     return res.json({ text });
   } catch (error) {
-    console.error('Gemini generation error:', error);
+    console.error('--- GEMINI ERROR LOG ---');
+    console.error('Message:', error.message);
+    if (error.response) console.error('Response Data:', error.response.data);
     return res.status(500).json({
-      error: 'Failed to generate content. Please try again.'
+      error: 'Backend Error',
+      details: error.message 
     });
   }
 });

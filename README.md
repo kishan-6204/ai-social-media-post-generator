@@ -1,12 +1,12 @@
-# AI Social Media Post Generator (Phase-1 MVP)
+# AI Social Media Post Generator (Phase-2 MVP)
 
-A clean, modern MVP web app that generates social media post text using **Google Gemini**.
+Phase-2 upgrades the original MVP with stronger backend validation, cleaner error handling, regenerate support, and a polished responsive UI with loading states, notifications, history, and copy-to-clipboard.
 
 ## Tech Stack
 
 - **Frontend:** React + Vite + Tailwind CSS
 - **Backend:** Node.js + Express
-- **AI:** `@google/generative-ai` using `gemini-pro`
+- **AI Provider:** Google Gemini 2.5 Flash via REST API
 
 ## Project Structure
 
@@ -14,26 +14,27 @@ A clean, modern MVP web app that generates social media post text using **Google
 .
 ├── backend/
 │   ├── server.js
-│   ├── .env.example
 │   └── package.json
-└── frontend/
-    ├── src/
-    │   ├── App.jsx
-    │   ├── components/
-    │   └── main.jsx
-    ├── tailwind.config.js
-    └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── tailwind.config.js
+│   └── package.json
+└── README.md
 ```
 
-## 1) Setup Backend
+## Local Setup
+
+### 1) Backend setup
 
 ```bash
 cd backend
 npm install
-cp .env.example .env
 ```
 
-Update `.env`:
+Create `backend/.env`:
 
 ```env
 GEMINI_API_KEY=your_actual_gemini_api_key
@@ -46,18 +47,18 @@ Run backend:
 npm run dev
 ```
 
-Backend runs at `http://localhost:5000`.
+Backend default URL: `http://localhost:5000`
 
-## 2) Setup Frontend
+### 2) Frontend setup
 
-Open another terminal:
+In a separate terminal:
 
 ```bash
 cd frontend
 npm install
 ```
 
-Optional API base URL override:
+Optional env override:
 
 ```bash
 echo 'VITE_API_BASE_URL=http://localhost:5000' > .env
@@ -69,11 +70,13 @@ Run frontend:
 npm run dev
 ```
 
-Frontend runs at `http://localhost:5173`.
+Frontend default URL: `http://localhost:5173`
 
-## API
+## API Endpoints
 
 ### `POST /generate`
+
+Generates a social media post and updates session history.
 
 Request body:
 
@@ -81,19 +84,62 @@ Request body:
 {
   "topic": "Launching my design newsletter",
   "platform": "LinkedIn",
-  "tone": "Professional"
+  "tone": "Professional",
+  "regenerate": false
 }
 ```
 
-Response:
+Successful response:
 
 ```json
 {
-  "text": "...generated social post..."
+  "text": "...generated social post...",
+  "history": []
 }
 ```
 
-## Notes
+Validation and upstream failures return clear JSON:
 
-- API key stays on backend only (never exposed to frontend).
-- MVP includes Generate, Regenerate, and Copy actions.
+```json
+{
+  "error": "ValidationError",
+  "message": "Topic is required and should be at least 3 characters long."
+}
+```
+
+### `GET /history`
+
+Returns last 5 generated posts for current server session:
+
+```json
+{
+  "history": []
+}
+```
+
+## Phase-2 Feature Summary
+
+### Backend
+
+- Input sanitization and field validation for `topic`, `platform`, and `tone`.
+- Structured JSON error responses.
+- Graceful Gemini rate-limit handling (`429`).
+- Regenerate support via `regenerate` flag.
+- In-memory history storage (last 5 per server session).
+- Centralized Express error middleware.
+
+### Frontend
+
+- Loading indicator and disabled button state while requests are in flight.
+- Clean inline + notification-based error display.
+- Working copy-to-clipboard action.
+- Separate regenerate button after first generation.
+- History panel showing last 5 generated posts.
+- Responsive card-based layout for mobile + desktop.
+- Improved focus styles, spacing, and accessible labels.
+- Optional light/dark theme toggle.
+
+## Security Note
+
+- Keep API keys on backend only.
+- Never commit `.env` files.
